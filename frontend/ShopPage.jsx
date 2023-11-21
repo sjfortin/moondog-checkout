@@ -41,7 +41,6 @@ const ShopPage = () => {
       title="Select Giphy Link to Display"
       primaryAction={{
         content: "Save",
-        // disabled: !selectedProduct,
         onAction: saveSelection,
       }}
       divider
