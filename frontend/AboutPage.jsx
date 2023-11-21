@@ -6,14 +6,14 @@ const AboutPage = () => {
 
   return (
     <Page
-      title="About"
+      title="About the app"
       backAction={{
         content: "Shop Information",
         onAction: () => navigate("/"),
       }}
     >
       <Text variant="bodyMd" as="p">
-        This is a simple Shopify Embedded App.
+        Checkout UI Extension Playground
       </Text>
     </Page>
   );

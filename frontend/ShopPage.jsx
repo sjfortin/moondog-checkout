@@ -1,4 +1,4 @@
-import { useFindFirst } from "@gadgetinc/react";
+import { useFindFirst, useAction } from "@gadgetinc/react";
 import {
   Layout,
   Page,
@@ -13,7 +13,7 @@ import {
   Text,
 } from "@shopify/polaris";
 import { api } from "./api";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 const ShopPage = () => {
   const [giphyLink, setGiphyLink] = useState("");
@@ -23,18 +23,32 @@ const ShopPage = () => {
     useFindFirst(api.shopifyShop, {
       select: {
         id: true,
+        giphyLink: true,
       },
     });
+
+  const [
+    { data: saveResponse, fetching: saving, error: saveError },
+    saveGiphyLink,
+  ] = useAction(api.shopifyShop.saveGiphyLink);
 
   const handleChange = useCallback(
     (newGiphyLink) => setGiphyLink(newGiphyLink),
     []
   );
 
-  // a useCallback hook that will send the selected product id to Gadget (eventually...)
   const saveSelection = useCallback(() => {
-    console.log({ giphyLink, shopData });
+    if (shopData && giphyLink) {
+      void saveGiphyLink({ id: shopData.id, giphyLink: giphyLink });
+    }
   }, [giphyLink, shopData]);
+
+  // Set the initial giphyLink state when the data is loaded
+  useEffect(() => {
+    if (shopData && shopData.giphyLink) {
+      setGiphyLink(shopData.giphyLink);
+    }
+  }, [shopData]);
 
   return (
     <Page
@@ -42,6 +56,7 @@ const ShopPage = () => {
       primaryAction={{
         content: "Save",
         onAction: saveSelection,
+        disabled: !giphyLink || saving,
       }}
       divider
     >
@@ -72,7 +87,10 @@ const ShopPage = () => {
                   value={giphyLink}
                   onChange={handleChange}
                   autoComplete="off"
+                  type="url"
+                  disabled={saving}
                 />
+                <img src={giphyLink} alt="" />
               </BlockStack>
             </Card>
           </InlineGrid>
